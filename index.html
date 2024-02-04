@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/normalize.css">
+</head>
+<body class="background " onload="animationStart(); createBarriersBoxes()" >
+<div class="background" id="background">
+    <img src="img/png/Dead%20(1).png" class="mario" id="mario">
+    <div class="=score" id="score"> 0 </div>
+    <div class="end" id="end">
+        <img class="marioLogo" src="img/5f569b8b4322de00046d577b.png"></img>
+        <div style="color: black; margin: 2vh" class="gameOver">Game over</div>
+        <div style="color: black; margin: 2vh" class="yourScore">Your score</div>
+        <div style="color: black; margin: 2vh"  id="endScore">0</div>
+        <button class="btn" onclick="reload()">Try Again</button>
+        <img class="img" src="img/6099bcfa2c8ed2287085e07b6105685e.png">
+        <img  class="trap" src="img/PotatoMineHD.png" >
+    </div>
+</div>
+
+<script>
+    var mario  = document.getElementById("mario");
+    idelNum=0;
+    animationNum=0;
+    runImgnNum=0;
+    runAnimationNumber=0;
+    bgPosition=0;
+    moveAnimationBgId=0;
+    jumpAniNum=0;
+    jumpAniNumber=0
+    margintopBoy=580;
+    boxMarginLept=500;
+    barrierAnimationId=0;
+
+
+    var score=0;
+    function idelAnimation(){
+        idelNum=idelNum+1;
+
+        if (idelNum==11){
+            idelNum=1;
+        }
+        mario.src = "img/png/Idle ("+idelNum+").png";
+    }
+
+    function runAnimation(){
+        runImgnNum=runImgnNum+1;
+        if(runImgnNum==9){
+            runImgnNum=1;
+        }
+        mario.src = "img/png/Run ("+runImgnNum+").png";
+    }
+
+    function jumpAnimation(){
+        jumpAniNum=jumpAniNum+1;
+
+        if (jumpAniNum <= 6){
+            margintopBoy=margintopBoy-30
+            mario.style.marginTop=margintopBoy+"px"
+
+        }
+        if (jumpAniNum > 7){
+            margintopBoy=margintopBoy+30
+            mario.style.marginTop=margintopBoy+"px"
+
+        }
+        if (jumpAniNum==13){
+            clearInterval(jumpAniNumber);
+            clearInterval(runAnimationNumber);
+            jumpAniNum=0;
+
+            runImgnNum=0;
+            runAnimationStart();
+
+        }
+       // mario.src = "img/png/Jump ("+runImgnNum+").png";
+        if (jumpAniNum==0){
+            mario.src = "img/png/Jump ("+1+").png";
+        }else{
+            mario.src = "img/png/Jump ("+jumpAniNum+").png";
+        }
+
+
+    }
+
+    function createBarriersBoxes(){
+
+        for (var i=0; i<=10; i++){
+            var  barrier = document.createElement("div");
+            barrier.className="barrier";
+            document.getElementById("background").appendChild(barrier);
+            barrier.style.marginLeft=boxMarginLept+"px"
+            barrier.id="barrier"+i;
+            if (i<5){
+
+                boxMarginLept=boxMarginLept+700;
+            }
+            if (i>=5){
+
+                boxMarginLept=boxMarginLept+500;
+            }
+            barrier.style.marginLeft=boxMarginLept+"px"
+        }
+
+    }
+    function barrierAnimation(){
+        for (var j=0; j<=10; j++){
+
+            var barrier=document.getElementById("barrier"+j);
+            let currentMarginLeft = getComputedStyle(barrier).marginLeft;
+            let newMarginLeft =parseInt(currentMarginLeft)-25;
+            barrier.style.marginLeft=newMarginLeft+"px";
+            if(newMarginLeft >=-10   && newMarginLeft<=250){
+
+
+                if(margintopBoy>500){
+                    clearInterval(barrierAnimationId);
+                    clearInterval(runAnimationNumber);
+                    runAnimationNumber=-1;
+                    clearInterval(jumpAniNum);
+                    jumpAniNum=-1;
+                    clearInterval(moveAnimationBgId);
+                    moveAnimationBgId=-1;
+                    deaAnimationNum=setInterval(deathAnimation,100);
+                    console.log('game OVer');
+                }
+            }
+
+        }
+    }
+    deadImgNum=0;
+    deaAnimationNum=0;
+    function deathAnimation(){
+        deadImgNum=deadImgNum+1;
+        if (deadImgNum==11){
+            deadImgNum=10;
+            document.getElementById("end").style.visibility="visible";
+            document.getElementById("endScore").innerText=score;
+            console.log("giya")
+
+        }
+        mario.src="img/png/Dead ("+deadImgNum+").png";
+
+    }
+
+
+    function animationStart(){
+         animationNum = setInterval(idelAnimation,100);
+    }
+    function runAnimationStart(){
+         runAnimationNumber = setInterval(runAnimation,100);
+        clearInterval(animationNum);
+    }
+    function jumpAnimationStart(){
+
+        runImgnNum=0;
+        // mario.style.top=
+        clearInterval(runAnimationNumber);
+        clearInterval(animationNum);
+        jumpAniNumber = setInterval(jumpAnimation,150);
+
+    }
+
+
+
+    document.addEventListener('keydown', function(event) {
+       
+        if (event.key === 'ArrowRight' || event.keyCode === 39) {
+
+            if (runAnimationNumber==0){
+                runAnimationStart();
+            }
+
+
+
+            if(moveAnimationBgId==0){
+                moveAnimationBgId = setInterval(moveBackground,100);
+
+
+            }
+            if(barrierAnimationId==0){
+
+                let barrierAnimation1 = setInterval(barrierAnimation,100);
+
+            }
+        }
+
+    });
+
+
+    document.addEventListener('keydown', function(event) {
+
+        if (event.key === 'ArrowLeft' || event.keyCode === 37) {
+
+           clearInterval(runAnimationNumber);
+           clearInterval(moveAnimationBgId);
+            clearInterval(jumpAniNumber);
+            animationNum = setInterval(idelAnimation,100);
+           runAnimationNumber=0;
+            moveAnimationBgId=0
+            jumpAniNum=0;
+        }
+    });
+
+    document.addEventListener('keydown', function(event) {
+
+        if (event.key === 'ArrowUp' || event.keyCode === 38) {
+            clearInterval(jumpAniNumber);
+            jumpAnimationStart();
+
+        }
+    });
+
+
+
+    myImage= document.getElementById("background");
+    function moveBackground(){
+
+        bgPosition=bgPosition-20;
+        document.getElementById("background").style.backgroundPositionX=bgPosition+"px"
+        score=score+1;
+        document.getElementById("score").innerText=score;
+
+
+    }
+    function reload(){
+        location.reload()
+    }
+
+</script>
+</body>
+</html>
